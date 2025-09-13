@@ -1,0 +1,19 @@
+/* Global styles for VibeWorld */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #fff;
+}
+main {
+  font-family: system-ui, sans-serif;
+  font-size: 2rem;
+  text-align: center;
+  color: #222;
+}
