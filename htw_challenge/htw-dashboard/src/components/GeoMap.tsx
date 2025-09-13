@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import L, { LatLngExpression } from "leaflet";
 
 // default icon fix for vite
 const DefaultIcon = L.icon({
@@ -12,13 +12,13 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function GeoMap({ points }:{points:{lat:number; lng:number; label?:string}[]}) {
-  const center = points[0] ? [points[0].lat, points[0].lng] as [number, number] : [21.3069, -157.8583];
+  const center: LatLngExpression = points[0] ? [points[0].lat, points[0].lng] : [21.3069, -157.8583];
   return (
     <div className="h-96 rounded-xl border bg-white overflow-hidden">
       <MapContainer center={center} zoom={7} style={{ height: "100%", width:"100%" }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {points.map((p,i)=>(
-          <Marker key={i} position={[p.lat, p.lng]}>
+          <Marker key={i} position={[p.lat, p.lng] as LatLngExpression}>
             <Popup>{p.label || `${p.lat}, ${p.lng}`}</Popup>
           </Marker>
         ))}
