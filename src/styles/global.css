@@ -4,16 +4,137 @@ html, body, #root {
   margin: 0;
   padding: 0;
 }
+
 body {
+  font-family: system-ui, sans-serif;
+  background: #fff;
+  color: #222;
+}
+
+/* Home page styles */
+.home-page {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #fff;
 }
-main {
-  font-family: system-ui, sans-serif;
-  font-size: 2rem;
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.input-label {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.pokemon-input {
+  font-size: 1rem;
+  padding: 10px 16px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  width: 200px;
   text-align: center;
-  color: #222;
+  font-family: system-ui, sans-serif;
+}
+
+.pokemon-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.9rem;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: -8px;
+}
+
+.next-page-button {
+  font-size: 1.2rem;
+  padding: 12px 24px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: system-ui, sans-serif;
+  transition: background-color 0.2s;
+}
+
+.next-page-button:hover {
+  background: #0056b3;
+}
+
+/* Second page styles */
+.second-page {
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.pokemon-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.pokemon-name-display {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #007bff;
+  text-transform: capitalize;
+}
+
+.loading {
+  font-size: 1.5rem;
+  color: #666;
+  animation: pulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.error {
+  font-size: 1.2rem;
+  color: #dc3545;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 16px 24px;
+}
+
+.go-back-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: system-ui, sans-serif;
+  padding: 0;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.go-back-button:hover {
+  color: #0056b3;
 }
