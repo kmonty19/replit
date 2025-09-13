@@ -98,5 +98,322 @@ th.sorted-desc .sort::after{content:"▼"}
     });
   });
 })();
+
+// Role Analytics Charts
+function createRoleCharts() {
+  const table = document.getElementById('sheet1');
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  
+  // Extract and categorize roles
+  const roleCounts = {};
+  const roleCategories = {
+    'Manager/Director/Executive': ['manager', 'director', 'executive', 'ceo', 'cto', 'cfo', 'vp', 'vice president', 'president', 'chief', 'head of', 'lead'],
+    'Engineer/Developer': ['engineer', 'developer', 'programmer', 'software', 'architect', 'technical', 'devops', 'fullstack', 'backend', 'frontend'],
+    'Designer/Creative': ['designer', 'creative', 'artist', 'animator', 'ux', 'ui', 'graphic', 'visual', 'brand'],
+    'Marketing/Sales': ['marketing', 'sales', 'business development', 'account', 'customer success', 'growth', 'digital marketing'],
+    'Consultant/Advisor': ['consultant', 'advisor', 'coach', 'freelance', 'independent'],
+    'Analyst/Data': ['analyst', 'data', 'research', 'scientist', 'analytics', 'business intelligence'],
+    'Student/Academic': ['student', 'professor', 'teacher', 'academic', 'researcher', 'phd', 'graduate'],
+    'Entrepreneur/Founder': ['founder', 'entrepreneur', 'startup', 'owner', 'co-founder'],
+    'Other': []
+  };
+  
+  rows.forEach(row => {
+    const roleCell = row.cells[0];
+    if (roleCell) {
+      const role = roleCell.textContent.toLowerCase().trim();
+      if (role === '') {
+        roleCounts['Not Specified'] = (roleCounts['Not Specified'] || 0) + 1;
+        return;
+      }
+      
+      let categorized = false;
+      for (const [category, keywords] of Object.entries(roleCategories)) {
+        if (category === 'Other') continue;
+        
+        if (keywords.some(keyword => role.includes(keyword))) {
+          roleCounts[category] = (roleCounts[category] || 0) + 1;
+          categorized = true;
+          break;
+        }
+      }
+      
+      if (!categorized) {
+        roleCounts['Other'] = (roleCounts['Other'] || 0) + 1;
+      }
+    }
+  });
+  
+  // Prepare data for charts
+  const labels = Object.keys(roleCounts);
+  const data = Object.values(roleCounts);
+  const colors = [
+    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+    '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0'
+  ];
+  
+  // Create Pie Chart
+  const pieCtx = document.getElementById('rolesPieChart').getContext('2d');
+  new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: colors,
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Role Distribution (Pie Chart)',
+          font: { size: 16, weight: 'bold' }
+        },
+        legend: {
+          position: 'right',
+          labels: { padding: 20 }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((context.parsed / total) * 100).toFixed(1);
+              return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  // Create Bar Chart
+  const barCtx = document.getElementById('rolesBarChart').getContext('2d');
+  new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Number of People',
+        data: data,
+        backgroundColor: colors.map(color => color + '80'),
+        borderColor: colors,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Role Distribution (Bar Chart)',
+          font: { size: 16, weight: 'bold' }
+        },
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Number of People'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Role Categories'
+          },
+          ticks: {
+            maxRotation: 45,
+            minRotation: 45
+          }
+        }
+      }
+    }
+  });
+}
+
+// Hawaii Map with Job Counts
+function createHawaiiMap() {
+  const table = document.getElementById('sheet1');
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  
+  // Extract city data for Hawaii (HI state)
+  const cityCounts = {};
+  
+  rows.forEach(row => {
+    const cityCell = row.cells[1]; // City column
+    const stateCell = row.cells[2]; // State column
+    
+    if (cityCell && stateCell && stateCell.textContent.trim() === 'HI') {
+      const city = cityCell.textContent.trim();
+      if (city) {
+        cityCounts[city] = (cityCounts[city] || 0) + 1;
+      }
+    }
+  });
+  
+  // Hawaii city coordinates (approximate)
+  const hawaiiCities = {
+    'Honolulu': { lat: 21.3099, lng: -157.8581, count: cityCounts['Honolulu'] || 0 },
+    'Hilo': { lat: 19.7297, lng: -155.0900, count: cityCounts['Hilo'] || 0 },
+    'Kailua': { lat: 21.4022, lng: -157.7394, count: cityCounts['Kailua'] || 0 },
+    'Kaneohe': { lat: 21.4180, lng: -157.8025, count: cityCounts['Kaneohe'] || 0 },
+    'Kailua-Kona': { lat: 19.6390, lng: -155.9969, count: cityCounts['Kailua-Kona'] || 0 },
+    'Lahaina': { lat: 20.8783, lng: -156.6825, count: cityCounts['Lahaina'] || 0 },
+    'Kahului': { lat: 20.8893, lng: -156.4729, count: cityCounts['Kahului'] || 0 },
+    'Lihue': { lat: 21.9811, lng: -159.3711, count: cityCounts['Lihue'] || 0 },
+    'Pearl City': { lat: 21.3972, lng: -157.9753, count: cityCounts['Pearl City'] || 0 },
+    'Waipahu': { lat: 21.3867, lng: -158.0094, count: cityCounts['Waipahu'] || 0 },
+    'Kihei': { lat: 20.7847, lng: -156.4494, count: cityCounts['Kihei'] || 0 },
+    'Mililani': { lat: 21.4511, lng: -158.0150, count: cityCounts['Mililani'] || 0 },
+    'Ewa Beach': { lat: 21.3156, lng: -158.0072, count: cityCounts['Ewa Beach'] || 0 },
+    'Aiea': { lat: 21.3847, lng: -157.9264, count: cityCounts['Aiea'] || 0 },
+    'Kapaa': { lat: 22.0752, lng: -159.3190, count: cityCounts['Kapaa'] || 0 }
+  };
+  
+  // Add any cities from data that aren't in our predefined list
+  Object.keys(cityCounts).forEach(city => {
+    if (!hawaiiCities[city] && cityCounts[city] > 0) {
+      // Default to Honolulu coordinates for unknown cities
+      hawaiiCities[city] = { lat: 21.3099, lng: -157.8581, count: cityCounts[city] };
+    }
+  });
+  
+  // Initialize Leaflet map
+  const map = L.map('hawaiiMap').setView([20.7967, -156.3319], 7);
+  
+  // Add OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+  
+  // Add city markers with job counts
+  Object.entries(hawaiiCities).forEach(([cityName, data]) => {
+    if (data.count > 0) {
+      // Create custom icon with count
+      const marker = L.marker([data.lat, data.lng]).addTo(map);
+      
+      // Create popup with city info
+      marker.bindPopup(`
+        <div style="text-align: center; font-weight: bold;">
+          <div style="font-size: 14px; color: #374151;">${cityName}</div>
+          <div style="font-size: 18px; color: #059669; margin-top: 4px;">${data.count} jobs</div>
+        </div>
+      `);
+      
+      // Add count label overlay
+      const countLabel = L.divIcon({
+        className: 'count-label',
+        html: `<div style="
+          background: #059669; 
+          color: white; 
+          border-radius: 50%; 
+          width: 30px; 
+          height: 30px; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          font-weight: bold; 
+          font-size: 12px;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        ">${data.count}</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      });
+      
+      L.marker([data.lat, data.lng], { icon: countLabel }).addTo(map);
+    }
+  });
+  
+  // Add legend
+  const legend = L.control({ position: 'bottomright' });
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'map-legend');
+    div.innerHTML = `
+      <div style="
+        background: white; 
+        padding: 10px; 
+        border-radius: 8px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        font-size: 12px;
+      ">
+        <div style="font-weight: bold; margin-bottom: 5px;">Job Counts by City</div>
+        <div style="display: flex; align-items: center; margin-bottom: 3px;">
+          <div style="
+            width: 20px; 
+            height: 20px; 
+            background: #059669; 
+            border-radius: 50%; 
+            margin-right: 8px;
+            border: 1px solid white;
+          "></div>
+          Number of jobs in city
+        </div>
+        <div style="color: #666; font-size: 11px;">Click markers for details</div>
+      </div>
+    `;
+    return div;
+  };
+  legend.addTo(map);
+}
+
+// Initialize charts and map when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Wait a bit for the table to be fully rendered
+  setTimeout(() => {
+    createRoleCharts();
+    createHawaiiMap();
+  }, 500);
+});
 </script>
+
+<!-- Charts Section -->
+<div class='section'>
+  <h2 style="margin-bottom: 20px; color: #374151;">Role Analytics</h2>
+  
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+    <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <canvas id="rolesPieChart" width="400" height="300"></canvas>
+    </div>
+    
+    <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <canvas id="rolesBarChart" width="400" height="300"></canvas>
+    </div>
+  </div>
+  
+  <div style="background: #f9fafb; padding: 15px; border-radius: 8px; font-size: 0.9rem; color: #6b7280;">
+    <strong>Note:</strong> Roles are automatically categorized based on keywords in job titles. 
+    The charts update dynamically based on filtered data in the table above.
+  </div>
+</div>
+
+<!-- Hawaii Map Section -->
+<div class='section'>
+  <h2 style="margin-bottom: 20px; color: #374151;">Hawaii Job Distribution Map</h2>
+  
+  <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div id="hawaiiMap" style="height: 500px; width: 100%; border-radius: 8px;"></div>
+  </div>
+  
+  <div style="background: #f9fafb; padding: 15px; border-radius: 8px; font-size: 0.9rem; color: #6b7280; margin-top: 15px;">
+    <strong>Interactive Map:</strong> Shows job counts for Hawaiian cities. Green circles display the number of jobs in each city. 
+    Click on markers for detailed information. Only cities with jobs are displayed.
+  </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Leaflet Map Library -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 </body></html>
